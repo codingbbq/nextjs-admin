@@ -3,8 +3,13 @@ import styles from "@/app/ui/dashboard/users/users.module.css";
 import Link from "next/link";
 import Image from "next/image";
 import Pagination from "@/app/ui/dashboard/pagination/Pagination";
+import { fetchUsers } from "@/app/lib/data";
 
-const Users = () => {
+const Users = async ({searchParams}) => {
+
+	const q = searchParams?.q || "";
+
+	const users = await fetchUsers(q);
 	return (
 		<>
 			<section className={styles.container}>
@@ -26,47 +31,49 @@ const Users = () => {
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>
-								<div className={styles.user}>
-									<Image
-										src="/noavatar.png"
-										alt="User"
-										width={40}
-										height={40}
-										className={styles.userImage}
-									/>
-									<div className={styles.userName}>
-										John Doe
+						{users.map((user) => (
+							<tr key={user.id}>
+								<td>
+									<div className={styles.user}>
+										<Image
+											src={user.img || "/noavatar.png"}
+											alt={user.username}
+											width={40}
+											height={40}
+											className={styles.userImage}
+										/>
+										<div className={styles.userName}>
+											{user.username}
+										</div>
 									</div>
-								</div>
-							</td>
-							<td>john@gmail.com</td>
-							<td>13.10.2023</td>
-							<td>Admin</td>
-							<td>active</td>
-							<td>
-								<div className={styles.button}>
-									<Link href="/dashboard/users/test">
-										<button
-											className={`${styles.button} ${styles.view}`}
-										>
-											View
-										</button>
-									</Link>
-									<Link href="/">
-										<button
-											className={`${styles.button} ${styles.delete}`}
-										>
-											Delete
-										</button>
-									</Link>
-								</div>
-							</td>
-						</tr>
+								</td>
+								<td>{user.email}</td>
+								<td>{user.createdAt?.toString().slice(4,16)}</td>
+								<td>{user.isAdmin ? "Admin": "No"}</td>
+								<td>{user.isActive ? "Active" : "No"}</td>
+								<td>
+									<div className={styles.button}>
+										<Link href={`/dashboard/users/${user.id}`}>
+											<button
+												className={`${styles.button} ${styles.view}`}
+											>
+												View
+											</button>
+										</Link>
+										<Link href="/">
+											<button
+												className={`${styles.button} ${styles.delete}`}
+											>
+												Delete
+											</button>
+										</Link>
+									</div>
+								</td>
+							</tr>
+						))}
 					</tbody>
 				</table>
-                <Pagination />
+				<Pagination />
 			</section>
 		</>
 	);

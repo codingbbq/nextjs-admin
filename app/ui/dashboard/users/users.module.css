@@ -46,6 +46,7 @@
     padding: 5px 10px;
     border: none;
     color: var(--text);
+    cursor: pointer;
 }
 
 .view {
