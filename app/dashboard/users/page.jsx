@@ -8,8 +8,9 @@ import { fetchUsers } from "@/app/lib/data";
 const Users = async ({searchParams}) => {
 
 	const q = searchParams?.q || "";
+	const page = searchParams?.page || 1;
 
-	const users = await fetchUsers(q);
+	const {count, users} = await fetchUsers(q, page);
 	return (
 		<>
 			<section className={styles.container}>
@@ -73,7 +74,7 @@ const Users = async ({searchParams}) => {
 						))}
 					</tbody>
 				</table>
-				<Pagination />
+				<Pagination count={count} />
 			</section>
 		</>
 	);
