@@ -1,30 +1,35 @@
+import { updateUser } from "@/app/lib/actions";
+import { fetchUser } from "@/app/lib/data";
 import styles from "@/app/ui/dashboard/users/singleUser/singleUser.module.css";
 import Image from "next/image";
 
-const SingleUserPage = () => {
+const SingleUserPage = async ({ params }) => {
+	const { id } = params
+	const user = await fetchUser(id);
 	return (
 		<>
 			<section className={styles.container}>
 				<div className={styles.infoContainer}>
 					<div className={styles.imgContainer}>
 						<Image
-							src="/noavatar.png"
-							alt=""
+							src={user.img || "/noavatar.png"}
+							alt={user.username}
 							width={250}
 							height={250}
 							className={styles.img}
 						/>
-						<span>John Doe</span>
+						<span>{user.username}</span>
 					</div>
 				</div>
 				<div className={styles.formContainer}>
-					<form action="" className={styles.form}>
+					<form action={updateUser} className={styles.form}>
+						<input type="hidden" name="id" value={user.id} />
 						<label htmlFor="username">Username</label>
 						<input
 							type="text"
 							id="username"
 							name="username"
-							placeholder="John Doe"
+							placeholder={user.username}
 						/>
 
 						<label htmlFor="email">Email</label>
@@ -32,7 +37,7 @@ const SingleUserPage = () => {
 							type="email"
 							id="email"
 							name="email"
-							placeholder="johndoe@email.com"
+							placeholder={user.email}
 						/>
 
 						<label htmlFor="password">Password</label>
@@ -48,7 +53,7 @@ const SingleUserPage = () => {
 							type="text"
 							id="phone"
 							name="phone"
-							placeholder="+1234567891"
+							placeholder={user.phone}
 						/>
 
 						<label htmlFor="address">Address</label>
@@ -57,23 +62,24 @@ const SingleUserPage = () => {
 							id="address"
 							cols="30"
 							rows="10"
-                            defaultValue={"New York"}
+                            defaultValue={user.address}
+							value={user.address}
 						>
 						</textarea>
 
 						<label htmlFor="isAdmin">isAdmin?</label>
 						<select name="isAdmin" id="isAdmin">
-							<option value={true}>Yes</option>
-							<option value={false}>No</option>
+							<option value={true} selected={user.isAdmin}>Yes</option>
+							<option value={false} selected={!user.isAdmin}>No</option>
 						</select>
 
 						<label htmlFor="isActive">isActive?</label>
 						<select name="isActive" id="isActive">
-							<option value={true}>Yes</option>
-							<option value={false}>No</option>
+							<option value={true} selected={user.isActive}>Yes</option>
+							<option value={false} selected={!user.isActive}>No</option>
 						</select>
 
-                        <button>Uupdate</button>
+                        <button>Update</button>
 					</form>
 				</div>
 			</section>

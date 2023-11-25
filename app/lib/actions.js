@@ -5,6 +5,7 @@ import { User, Product } from "./models";
 import { CONNECT } from "./utils";
 import { redirect } from "next/navigation";
 import bcrypt from "bcrypt";
+import { signIn } from "../auth";
 
 export const addUser = async (formData) => {
 	const { username, email, password, phone, address, isAdmin, isActive } =
@@ -25,6 +26,40 @@ export const addUser = async (formData) => {
 			isActive,
 		});
 		await newUser.save();
+	} catch (error) {
+		console.log(error);
+		throw new Error("Failed to create user!");
+	}
+
+	revalidatePath("/dashboard/users");
+	redirect("/dashboard/users");
+};
+
+// Update user
+export const updateUser = async (formData) => {
+	const { id, username, email, password, phone, address, isAdmin, isActive } =
+		Object.fromEntries(formData);
+	try {
+		CONNECT();
+
+		const updatedUserFields = {
+			username,
+			email,
+			password,
+			phone,
+			address,
+			isAdmin,
+			isActive,
+		};
+
+		Object.keys(updatedUserFields).forEach(
+			(key) =>
+				(updatedUserFields[key] === "" || undefined) &&
+				delete updatedUserFields[key]
+		);
+
+		await User.findByIdAndUpdate(id, updatedUserFields);
+
 	} catch (error) {
 		console.log(error);
 		throw new Error("Failed to create user!");
@@ -58,13 +93,11 @@ export const addProduct = async (formData) => {
 	redirect("/dashboard/products");
 };
 
-
 export const deleteProduct = async (formData) => {
-	const { id } =
-		Object.fromEntries(formData);
+	const { id } = Object.fromEntries(formData);
 	try {
 		CONNECT();
-        await Product.findByIdAndDelete(id);
+		await Product.findByIdAndDelete(id);
 	} catch (error) {
 		console.log(error);
 		throw new Error("Failed to delete Product!");
@@ -73,14 +106,23 @@ export const deleteProduct = async (formData) => {
 };
 
 export const deleteUser = async (formData) => {
-	const { id } =
-		Object.fromEntries(formData);
+	const { id } = Object.fromEntries(formData);
 	try {
 		CONNECT();
-        await User.findByIdAndDelete(id);
+		await User.findByIdAndDelete(id);
 	} catch (error) {
 		console.log(error);
 		throw new Error("Failed to delete Uesr!");
 	}
 	revalidatePath("/dashboard/users");
 };
+
+export const authenticate = async (formData) => {
+    const { username, password } = Object.fromEntries(formData);
+    try {
+        await signIn("credentials", { username, password });
+    } catch (error) {
+        console.log(error);
+        return { error : "Wrong credentials!" }
+    }
+}
