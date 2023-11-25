@@ -1,5 +1,7 @@
 ## A simple Admin Dashboard app using Next.js 14.0
 
+![Screenshot](NextJS-Admin-Dashboard-Ap.png)
+
 - Check the project [hosted on vercel](https://nextjs-admin-red.vercel.app/dashboard)
 
 ### What I learned
